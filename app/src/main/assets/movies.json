@@ -1,0 +1,82 @@
+[
+  {
+    "id": "big-buck-bunny",
+    "title": "Big Buck Bunny",
+    "year": 2008,
+    "durationMinutes": 10,
+    "genres": ["动画", "喜剧"],
+    "synopsis": "一只体型庞大却性情温和的兔子，被森林里三只捣蛋的啮齿动物盯上。忍无可忍之后，它决定设计一场妙趣横生的反击。",
+    "posterUrl": "https://placehold.co/600x900/1a2332/e8eef5/png?text=Big+Buck+Bunny",
+    "videoUrl": "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
+  },
+  {
+    "id": "sintel",
+    "title": "Sintel",
+    "year": 2010,
+    "durationMinutes": 15,
+    "genres": ["动画", "奇幻", "冒险"],
+    "synopsis": "孤独的少女 Sintel 在旅途中救下一只受伤的小龙，并与之结下深厚羁绊。当小龙被掳走后，她踏上了一场漫长而艰难的寻找之旅。",
+    "posterUrl": "https://placehold.co/600x900/2b1c2e/e8eef5/png?text=Sintel",
+    "videoUrl": "https://download.blender.org/durian/trailer/sintel_trailer-480p.mp4"
+  },
+  {
+    "id": "tears-of-steel",
+    "title": "Tears of Steel",
+    "year": 2012,
+    "durationMinutes": 12,
+    "genres": ["科幻", "动作"],
+    "synopsis": "在未来世界，一群科学家试图通过重现一段旧日情感来阻止失控的机器人军队，而失败过一次的主角必须再次面对自己的过去。",
+    "posterUrl": "https://placehold.co/600x900/1c2a2a/e8eef5/png?text=Tears+of+Steel",
+    "videoUrl": "https://demo.unified-streaming.com/k8s/features/stable/video/tears-of-steel/tears-of-steel.ism/.m3u8"
+  },
+  {
+    "id": "elephants-dream",
+    "title": "Elephants Dream",
+    "year": 2006,
+    "durationMinutes": 11,
+    "genres": ["动画", "实验"],
+    "synopsis": "在一座不断变换的机械世界里，两个性格迥异的同伴探索着彼此的秘密，也探索着现实与想象之间模糊的边界。",
+    "posterUrl": "https://placehold.co/600x900/2c2418/e8eef5/png?text=Elephants+Dream",
+    "videoUrl": "https://test-streams.mux.dev/test_001/stream.m3u8"
+  },
+  {
+    "id": "cosmos-laundromat",
+    "title": "Cosmos Laundromat",
+    "year": 2015,
+    "durationMinutes": 12,
+    "genres": ["动画", "奇幻"],
+    "synopsis": "一只厌倦了生活的绵羊遇到神秘商人，获得了一次重新开始的机会。然而，每一次选择都把他带向更加荒诞的远方。",
+    "posterUrl": "https://placehold.co/600x900/1f2a38/e8eef5/png?text=Cosmos+Laundromat",
+    "videoUrl": "https://devstreaming-cdn.apple.com/videos/streaming/examples/img_bipbop_adv_example_fmp4/master.m3u8"
+  },
+  {
+    "id": "spring",
+    "title": "Spring",
+    "year": 2019,
+    "durationMinutes": 8,
+    "genres": ["动画", "奇幻"],
+    "synopsis": "年轻的牧羊女与她的狗守护着山间的四季轮回。当春天迟迟不肯到来，她必须直面古老的自然之力。",
+    "posterUrl": "https://placehold.co/600x900/1b2e22/e8eef5/png?text=Spring",
+    "videoUrl": "https://test-streams.mux.dev/pts_shift/master.m3u8"
+  },
+  {
+    "id": "agent-327",
+    "title": "Agent 327: Operation Barbershop",
+    "year": 2017,
+    "durationMinutes": 4,
+    "genres": ["动画", "动作", "喜剧"],
+    "synopsis": "特工 327 走进一家看似普通的理发店，却发现这里藏着敌人的秘密据点。一次例行任务迅速演变成一场混乱的追逐。",
+    "posterUrl": "https://placehold.co/600x900/2e1f1f/e8eef5/png?text=Agent+327",
+    "videoUrl": "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
+  },
+  {
+    "id": "caminandes-llamigos",
+    "title": "Caminandes: Llamigos",
+    "year": 2016,
+    "durationMinutes": 3,
+    "genres": ["动画", "喜剧"],
+    "synopsis": "在巴塔哥尼亚的雪原上，一只倒霉的羊驼为了几颗浆果，与一只执着的犰狳展开了一场啼笑皆非的较量。",
+    "posterUrl": "https://placehold.co/600x900/2a2618/e8eef5/png?text=Caminandes",
+    "videoUrl": "https://download.blender.org/durian/trailer/sintel_trailer-480p.mp4"
+  }
+]
