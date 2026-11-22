@@ -8,6 +8,7 @@ import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Rule
 import org.junit.Test
 
@@ -219,6 +220,55 @@ class HomeViewModelTest {
 
             val state = viewModel.uiState.value as HomeUiState.Success
             assertEquals(listOf("动画", "奇幻", "科幻"), state.genres)
+        }
+
+    @Test
+    fun `clear filters resets query and genre`() =
+        runTest(mainDispatcherRule.dispatcher.scheduler) {
+            val sintel = sampleMovie(id = "sintel", title = "Sintel", genres = listOf("动画"))
+            val tears = sampleMovie(id = "tears", title = "Tears of Steel", genres = listOf("科幻"))
+            val viewModel = HomeViewModel(FakeMovieRepository(listOf(sintel, tears)))
+            advanceUntilIdle()
+            viewModel.onGenreSelected("科幻")
+            viewModel.onQueryChange("zzz")
+            assertTrue((viewModel.uiState.value as HomeUiState.Success).movies.isEmpty())
+
+            viewModel.clearFilters()
+
+            val state = viewModel.uiState.value as HomeUiState.Success
+            assertEquals(listOf(sintel, tears), state.movies)
+            assertEquals("", state.query)
+            assertNull(state.selectedGenre)
+        }
+
+    @Test
+    fun `retry keeps the selected genre`() =
+        runTest(mainDispatcherRule.dispatcher.scheduler) {
+            val sintel = sampleMovie(id = "sintel", genres = listOf("动画"))
+            val tears = sampleMovie(
+                id = "tears",
+                title = "Tears of Steel",
+                genres = listOf("科幻"),
+            )
+            val repository = FakeMovieRepository(listOf(sintel, tears))
+            val viewModel = HomeViewModel(repository)
+            advanceUntilIdle()
+            viewModel.onGenreSelected("科幻")
+            viewModel.onQueryChange("Tears")
+
+            repository.failure = IllegalStateException("offline")
+            viewModel.loadMovies()
+            advanceUntilIdle()
+            assertEquals(HomeUiState.Error("offline"), viewModel.uiState.value)
+
+            repository.failure = null
+            viewModel.loadMovies()
+            advanceUntilIdle()
+
+            val state = viewModel.uiState.value as HomeUiState.Success
+            assertEquals(listOf(tears), state.movies)
+            assertEquals("Tears", state.query)
+            assertEquals("科幻", state.selectedGenre)
         }
 
     @Test

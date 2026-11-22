@@ -3,7 +3,6 @@ package com.dylanxy.kiwivideo.ui.home
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -18,6 +17,7 @@ import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
@@ -69,7 +69,10 @@ fun HomeScreen(
                 state.movies.isEmpty() &&
                 (state.query.isNotBlank() || state.selectedGenre != null)
             ) {
-                EmptySearchState(Modifier.padding(innerPadding))
+                EmptySearchState(
+                    onClearFilters = viewModel::clearFilters,
+                    modifier = Modifier.padding(innerPadding),
+                )
             } else {
                 MovieGrid(
                     movies = state.movies,
@@ -109,7 +112,7 @@ private fun HomeTopBar(
             OutlinedTextField(
                 value = success.query,
                 onValueChange = onQueryChange,
-                placeholder = { Text("搜索影片") },
+                label = { Text("搜索影片") },
                 singleLine = true,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -166,12 +169,16 @@ private fun GenreChip(
 }
 
 @Composable
-private fun EmptySearchState(modifier: Modifier = Modifier) {
-    Box(
+private fun EmptySearchState(
+    onClearFilters: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
         modifier = modifier
             .fillMaxSize()
             .padding(32.dp),
-        contentAlignment = Alignment.Center,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
     ) {
         Text(
             text = "没有匹配的影片",
@@ -179,6 +186,10 @@ private fun EmptySearchState(modifier: Modifier = Modifier) {
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
         )
+        Spacer(Modifier.height(16.dp))
+        Button(onClick = onClearFilters) {
+            Text("清除筛选")
+        }
     }
 }
 

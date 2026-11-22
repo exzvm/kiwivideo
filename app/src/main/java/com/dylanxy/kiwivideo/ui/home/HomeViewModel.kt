@@ -65,6 +65,12 @@ class HomeViewModel(
         refreshIfLoaded()
     }
 
+    fun clearFilters() {
+        query = ""
+        selectedGenre = null
+        refreshIfLoaded()
+    }
+
     private fun refreshIfLoaded() {
         if (_uiState.value is HomeUiState.Success) {
             _uiState.value = successState()
