@@ -7,6 +7,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNull
 import org.junit.Rule
 import org.junit.Test
 
@@ -24,7 +25,10 @@ class HomeViewModelTest {
 
         assertEquals(HomeUiState.Loading, viewModel.uiState.value)
         advanceUntilIdle()
-        assertEquals(HomeUiState.Success(movies), viewModel.uiState.value)
+        assertEquals(
+            HomeUiState.Success(movies, genres = listOf("动画", "奇幻")),
+            viewModel.uiState.value,
+        )
     }
 
     @Test
@@ -49,7 +53,11 @@ class HomeViewModelTest {
             viewModel.onQueryChange("BUNNY")
 
             assertEquals(
-                HomeUiState.Success(listOf(bunny), query = "BUNNY"),
+                HomeUiState.Success(
+                    listOf(bunny),
+                    query = "BUNNY",
+                    genres = listOf("动画", "奇幻"),
+                ),
                 viewModel.uiState.value,
             )
         }
@@ -65,7 +73,10 @@ class HomeViewModelTest {
 
         viewModel.onQueryChange("   ")
 
-        assertEquals(HomeUiState.Success(movies, query = "   "), viewModel.uiState.value)
+        assertEquals(
+            HomeUiState.Success(movies, query = "   ", genres = listOf("动画", "奇幻")),
+            viewModel.uiState.value,
+        )
     }
 
     @Test
@@ -78,7 +89,11 @@ class HomeViewModelTest {
         viewModel.onQueryChange("zzz")
 
         assertEquals(
-            HomeUiState.Success(emptyList(), query = "zzz"),
+            HomeUiState.Success(
+                emptyList(),
+                query = "zzz",
+                genres = listOf("动画", "奇幻"),
+            ),
             viewModel.uiState.value,
         )
     }
@@ -102,9 +117,108 @@ class HomeViewModelTest {
             assertEquals(HomeUiState.Loading, viewModel.uiState.value)
             advanceUntilIdle()
             assertEquals(
-                HomeUiState.Success(listOf(bunny), query = "bunny"),
+                HomeUiState.Success(
+                    listOf(bunny),
+                    query = "bunny",
+                    genres = listOf("动画", "奇幻"),
+                ),
                 viewModel.uiState.value,
             )
+        }
+
+    @Test
+    fun `filters by the selected genre`() = runTest(mainDispatcherRule.dispatcher.scheduler) {
+        val sintel = sampleMovie(id = "sintel", title = "Sintel", genres = listOf("动画", "奇幻"))
+        val tears = sampleMovie(id = "tears", title = "Tears of Steel", genres = listOf("科幻", "动作"))
+        val viewModel = HomeViewModel(FakeMovieRepository(listOf(sintel, tears)))
+        advanceUntilIdle()
+
+        viewModel.onGenreSelected("科幻")
+
+        val state = viewModel.uiState.value as HomeUiState.Success
+        assertEquals(listOf(tears), state.movies)
+        assertEquals("科幻", state.selectedGenre)
+    }
+
+    @Test
+    fun `exposes distinct genres from the full catalog`() =
+        runTest(mainDispatcherRule.dispatcher.scheduler) {
+            val movies = listOf(
+                sampleMovie(id = "sintel", genres = listOf("动画", "奇幻")),
+                sampleMovie(id = "tears", genres = listOf("科幻", "动画")),
+            )
+            val viewModel = HomeViewModel(FakeMovieRepository(movies))
+            advanceUntilIdle()
+
+            val state = viewModel.uiState.value as HomeUiState.Success
+
+            assertEquals(listOf("动画", "奇幻", "科幻"), state.genres)
+        }
+
+    @Test
+    fun `clearing the genre shows every movie`() =
+        runTest(mainDispatcherRule.dispatcher.scheduler) {
+            val sintel = sampleMovie(id = "sintel", genres = listOf("动画"))
+            val tears = sampleMovie(id = "tears", genres = listOf("科幻"))
+            val viewModel = HomeViewModel(FakeMovieRepository(listOf(sintel, tears)))
+            advanceUntilIdle()
+            viewModel.onGenreSelected("科幻")
+
+            viewModel.onGenreSelected(null)
+
+            val state = viewModel.uiState.value as HomeUiState.Success
+            assertEquals(listOf(sintel, tears), state.movies)
+            assertNull(state.selectedGenre)
+        }
+
+    @Test
+    fun `combines query and genre filters`() =
+        runTest(mainDispatcherRule.dispatcher.scheduler) {
+            val sintel = sampleMovie(
+                id = "sintel",
+                title = "Sintel",
+                genres = listOf("动画", "奇幻"),
+            )
+            val bunny = sampleMovie(
+                id = "bunny",
+                title = "Big Buck Bunny",
+                genres = listOf("动画", "喜剧"),
+            )
+            val tears = sampleMovie(
+                id = "tears",
+                title = "Tears of Steel",
+                genres = listOf("科幻", "动作"),
+            )
+            val viewModel = HomeViewModel(FakeMovieRepository(listOf(sintel, bunny, tears)))
+            advanceUntilIdle()
+            viewModel.onGenreSelected("动画")
+            assertEquals(
+                listOf(sintel, bunny),
+                (viewModel.uiState.value as HomeUiState.Success).movies,
+            )
+
+            viewModel.onQueryChange("e")
+
+            val state = viewModel.uiState.value as HomeUiState.Success
+            assertEquals(listOf(sintel), state.movies)
+            assertEquals("e", state.query)
+            assertEquals("动画", state.selectedGenre)
+        }
+
+    @Test
+    fun `keeps every genre available after selecting one`() =
+        runTest(mainDispatcherRule.dispatcher.scheduler) {
+            val movies = listOf(
+                sampleMovie(id = "sintel", genres = listOf("动画", "奇幻")),
+                sampleMovie(id = "tears", genres = listOf("科幻", "动画")),
+            )
+            val viewModel = HomeViewModel(FakeMovieRepository(movies))
+            advanceUntilIdle()
+
+            viewModel.onGenreSelected("动画")
+
+            val state = viewModel.uiState.value as HomeUiState.Success
+            assertEquals(listOf("动画", "奇幻", "科幻"), state.genres)
         }
 
     @Test

@@ -19,6 +19,8 @@ sealed interface HomeUiState {
     data class Success(
         val movies: List<Movie>,
         val query: String = "",
+        val selectedGenre: String? = null,
+        val genres: List<String> = emptyList(),
     ) : HomeUiState
 
     data class Error(val message: String) : HomeUiState
@@ -33,6 +35,7 @@ class HomeViewModel(
 
     private var catalog: List<Movie> = emptyList()
     private var query: String = ""
+    private var selectedGenre: String? = null
 
     init {
         loadMovies()
@@ -54,13 +57,36 @@ class HomeViewModel(
 
     fun onQueryChange(newQuery: String) {
         query = newQuery
+        refreshIfLoaded()
+    }
+
+    fun onGenreSelected(genre: String?) {
+        selectedGenre = genre
+        refreshIfLoaded()
+    }
+
+    private fun refreshIfLoaded() {
         if (_uiState.value is HomeUiState.Success) {
             _uiState.value = successState()
         }
     }
 
     private fun successState(): HomeUiState.Success =
-        HomeUiState.Success(applyQuery(catalog), query)
+        HomeUiState.Success(
+            movies = applyFilters(catalog),
+            query = query,
+            selectedGenre = selectedGenre,
+            genres = availableGenres(),
+        )
+
+    private fun availableGenres(): List<String> =
+        catalog.flatMap { it.genres }.distinct().sorted()
+
+    private fun applyFilters(movies: List<Movie>): List<Movie> {
+        val byQuery = applyQuery(movies)
+        val genre = selectedGenre ?: return byQuery
+        return byQuery.filter { genre in it.genres }
+    }
 
     private fun applyQuery(movies: List<Movie>): List<Movie> {
         val trimmed = query.trim()

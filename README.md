@@ -5,6 +5,7 @@
 ## 当前功能
 
 - **首页**：电影海报网格（自适应列数），加载中 / 加载失败 / 重试状态
+- **搜索 / 筛选**：按片名即时搜索、按类型筛选，两者可组合；无匹配时显示提示
 - **详情页**：海报、简介、年份 / 时长 / 类型，播放入口
 - **播放页**：Media3 ExoPlayer，支持 HLS 与 MP4，全屏沉浸模式、播放/暂停/进度、进入后台自动暂停、播放错误提示
 - **数据**：内置 `assets/movies.json`（8 部 Blender 开源电影），无网络时海报自动降级为渐变占位图
@@ -44,7 +45,7 @@ app/src/main/
 ## 构建与测试
 
 ```bash
-./gradlew testDebugUnitTest   # 13 个 JVM 单测
+./gradlew testDebugUnitTest   # 22 个 JVM 单测
 ./gradlew assembleDebug       # 生成 APK
 ./gradlew lintDebug
 ```
@@ -86,7 +87,7 @@ UI 与 ViewModel 只依赖 `MovieRepository` 接口：
 
 ## 已知限制（V2 候选）
 
-- 无搜索 / 分类筛选、登录、收藏、观看历史、下载
+- 无登录、收藏、观看历史、下载
 - 播放器暂无倍速、字幕、手势调节、清晰度切换
 - 片单是静态文件，暂无后端
 - `compileSdk = 37.1`（依赖 `core-ktx 1.19` 的硬性要求），`targetSdk = 36`

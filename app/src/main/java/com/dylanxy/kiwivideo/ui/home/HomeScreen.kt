@@ -1,10 +1,12 @@
 package com.dylanxy.kiwivideo.ui.home
 
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,7 +17,9 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -46,8 +50,9 @@ fun HomeScreen(
     Scaffold(
         topBar = {
             HomeTopBar(
-                query = success?.query,
+                success = success,
                 onQueryChange = viewModel::onQueryChange,
+                onGenreSelected = viewModel::onGenreSelected,
             )
         },
     ) { innerPadding ->
@@ -60,7 +65,10 @@ fun HomeScreen(
                 modifier = Modifier.padding(innerPadding),
             )
 
-            is HomeUiState.Success -> if (state.movies.isEmpty() && state.query.isNotBlank()) {
+            is HomeUiState.Success -> if (
+                state.movies.isEmpty() &&
+                (state.query.isNotBlank() || state.selectedGenre != null)
+            ) {
                 EmptySearchState(Modifier.padding(innerPadding))
             } else {
                 MovieGrid(
@@ -76,8 +84,9 @@ fun HomeScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun HomeTopBar(
-    query: String?,
+    success: HomeUiState.Success?,
     onQueryChange: (String) -> Unit,
+    onGenreSelected: (String?) -> Unit,
 ) {
     Column {
         TopAppBar(
@@ -96,9 +105,9 @@ private fun HomeTopBar(
                 }
             },
         )
-        if (query != null) {
+        if (success != null) {
             OutlinedTextField(
-                value = query,
+                value = success.query,
                 onValueChange = onQueryChange,
                 placeholder = { Text("搜索影片") },
                 singleLine = true,
@@ -106,8 +115,54 @@ private fun HomeTopBar(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp, vertical = 8.dp),
             )
+            GenreFilterRow(
+                genres = success.genres,
+                selectedGenre = success.selectedGenre,
+                onGenreSelected = onGenreSelected,
+            )
         }
     }
+}
+
+@Composable
+private fun GenreFilterRow(
+    genres: List<String>,
+    selectedGenre: String?,
+    onGenreSelected: (String?) -> Unit,
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 4.dp)
+            .horizontalScroll(rememberScrollState()),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        GenreChip(
+            label = "全部",
+            selected = selectedGenre == null,
+            onClick = { onGenreSelected(null) },
+        )
+        genres.forEach { genre ->
+            GenreChip(
+                label = genre,
+                selected = selectedGenre == genre,
+                onClick = { onGenreSelected(genre) },
+            )
+        }
+    }
+}
+
+@Composable
+private fun GenreChip(
+    label: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+) {
+    FilterChip(
+        selected = selected,
+        onClick = onClick,
+        label = { Text(label) },
+    )
 }
 
 @Composable
