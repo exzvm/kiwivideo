@@ -36,3 +36,8 @@ google-services.json
 
 # macOS
 .DS_Store
+
+# Local-only docs (not versioned in this repository)
+/.scratch/
+/docs/
+/AGENTS.md
